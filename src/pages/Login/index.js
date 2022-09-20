@@ -45,8 +45,7 @@ function Login() {
             <Box sx={style}>
                 <Header>
                     <h2>Login </h2>
-                    dqwduqwdgiu gdiqwg diuqg diu
-                    dqwjdioqhwdoqwhd
+                    
                 </Header>
                 <WrapForm>
                     <form onSubmit={handleSubmit(onSubmit)}>
