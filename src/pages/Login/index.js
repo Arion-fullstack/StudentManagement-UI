@@ -39,13 +39,14 @@ function Login() {
     const onSubmit = (data) => {
         console.log(data)
     }
-
+    const handleTest = () => {
+        console.log("Test")
+    }
     return (
         <Wrapper>
             <Box sx={style}>
                 <Header>
                     <h2>Login </h2>
-                    
                 </Header>
                 <WrapForm>
                     <form onSubmit={handleSubmit(onSubmit)}>
