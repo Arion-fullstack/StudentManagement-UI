@@ -9,11 +9,12 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import styled from 'styled-components';
 import ItemStudent from '../../components/ItemStudent';
+import { getStudentList, getListStudent, gePaginateStudent, getMessageError } from "./studentSlice"
+
 import { useDispatch, useSelector } from 'react-redux'
 import { Pagination } from '@mui/material';
 import { Box } from '@mui/system';
 import MySnackbar from '../../components/MySnackbar';
-
 
 const StyledTableCell = styledMui(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -36,9 +37,31 @@ const TableBottom = styled(Box)`
     justify-content: flex-end;
 `
 const StudentManagement = () => {
-    const students = []
+
+    const dispatch = useDispatch();
+    const students = useSelector(getListStudent)
+    const paginate = useSelector(gePaginateStudent)
+    const messageError = useSelector(getMessageError)
     const [isOpenSnackbar, setIsOpenSnackbar] = useState(false)
-    const handleChange = (event, value) => console.log(value);
+    const handleChange = (event, value) => dispatch(getStudentList(value));
+
+    // dispatch action get list student
+    useEffect(() => {
+        dispatch(getStudentList(1));
+    }, [])
+
+    // show message error
+    useEffect(() => {
+        if (messageError.length > 0) {
+            setIsOpenSnackbar(true)
+        }
+        const updateStateSnackbar = setTimeout(() => {
+            setIsOpenSnackbar(false)
+        }, 2000)
+
+        return () => clearTimeout(updateStateSnackbar)
+    }, [messageError]);
+
     return (
         <Wrapper>
             <TableContainer component={Paper}>
@@ -49,24 +72,31 @@ const StudentManagement = () => {
                             <StyledTableCell align="left">Student Last Name</StyledTableCell>
                             <StyledTableCell align="left">Student Email</StyledTableCell>
                             <StyledTableCell align="center">Action</StyledTableCell>
-
-
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {
-                            students.map((row, index) => (
-                                <ItemStudent row={row} key={index} />
-                            ))
-                        }
+                        {students.length > 0 ? students.map((row, index) => (
+                            <ItemStudent row={row} key={index} />
+                        ))
+                            : <TableRow>
+                                <StyledTableCell colSpan="4" className='center'>
+                                    <h3>{messageError.length > 0 ? messageError : "No students exist"}</h3>
+                                </StyledTableCell>
+                            </TableRow>}
                     </TableBody>
                 </Table>
+
+                {students.length > 0 && paginate && <TableBottom>
+                    <Pagination count={paginate.totalPage} color="primary" onChange={handleChange} />
+                </TableBottom>}
+
             </TableContainer>
             {
-                isOpenSnackbar && <MySnackbar isOpen={isOpenSnackbar} severity="error" title={"dwq"} />
+                isOpenSnackbar && <MySnackbar isOpen={isOpenSnackbar} severity="error" title={messageError} />
             }
         </Wrapper >
     );
 };
 
 export default StudentManagement;
+
