@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { createStudent } from '../StudentManagement/studentSlice'
 import { Box, Button, Snackbar, Stack, TextField } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
@@ -44,7 +45,15 @@ function AddStudent() {
     const vertical = 'bottom'
     const horizontal = 'left'
     const onSubmit = async (data) => {
-        console.log(data)
+        try {
+            await setIsDisabled(true)
+            await dispatch(createStudent(data))
+            await setIsOpen(true)
+            await setTimeout(() => navigate("/"), 600)
+        }
+        catch (error) {
+            console.log(error)
+        }
 
     }
     return (

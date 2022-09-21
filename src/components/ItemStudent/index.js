@@ -13,6 +13,7 @@ import styled from "styled-components"
 import DialogCustom from '../DialogCustom';
 
 import { useDispatch } from "react-redux"
+import { deleteStudent, updateStudent } from "../../pages/StudentManagement/studentSlice"
 
 const StyledTableRow = styledMui(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
@@ -64,11 +65,10 @@ const ItemStudent = ({ row, isPermission }) => {
     const handleClose = () => setOpen(false);
     const handleClickOpen = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
-    const handleDelete = () => {
-        //handleDelete
-    }
+    const handleDelete = () => dispatch(deleteStudent(row.id))
     const onSubmit = data => {
-        console.log(data)
+        dispatch(updateStudent({ ...data, id: row.id }));
+        handleClose()
     };
 
     return (

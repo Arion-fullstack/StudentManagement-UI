@@ -7,6 +7,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DialogCustom from '../../components/DialogCustom';
 import { useDispatch } from 'react-redux'
+import { deleteAllStudent, searchStudent, getStudentList } from "../../pages/StudentManagement/studentSlice"
 import { styled as muiStyled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
@@ -16,6 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import LogoutIcon from '@mui/icons-material/Logout';
+import { logout } from '../../pages/Login/authSlice';
 
 const Wrapper = styled.div`
     background-color: #1565C0;
@@ -73,18 +75,18 @@ const Header = () => {
 
     const navigate = useNavigate()
     const localtion = useLocation()
+    const dispatch = useDispatch()
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [open, setOpen] = React.useState(false);
     const [placement, setPlacement] = React.useState();
     const [openDialog, setOpenDialog] = useState(false);
+    const [value, setValue] = useState("");
 
 
     const handleClickOpen = () => setOpenDialog(true);
     const handleCloseDialog = () => setOpenDialog(false);
-    const handleDelete = () => {
-        //handleDelete
-    }
-    const handleChange = event => console.log(event.target.value)
+    const handleDelete = () => dispatch(deleteAllStudent())
+    const handleChange = event => setValue(event.target.value)
 
     const handleClick = (newPlacement) => (event) => {
         setAnchorEl(event.currentTarget);
@@ -97,9 +99,19 @@ const Header = () => {
     }
 
     const handleLogout = async () => {
+        await dispatch(logout())
         await navigate("/login")
     }
-
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            value.length > 0
+                ?
+                dispatch(searchStudent(value))
+                :
+                dispatch(getStudentList(1))
+        }, 600);
+        return () => clearTimeout(handler);
+    }, [value]);
     const menuList = [
         {
             name: "Add Student",
