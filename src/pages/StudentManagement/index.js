@@ -10,11 +10,12 @@ import Paper from '@mui/material/Paper';
 import styled from 'styled-components';
 import ItemStudent from '../../components/ItemStudent';
 import { getStudentList, getListStudent, gePaginateStudent, getMessageError } from "./studentSlice"
-
+import jwtDecode from 'jwt-decode'
 import { useDispatch, useSelector } from 'react-redux'
 import { Pagination } from '@mui/material';
 import { Box } from '@mui/system';
 import MySnackbar from '../../components/MySnackbar';
+import { getToken } from '../Login/authSlice'
 
 const StyledTableCell = styledMui(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
@@ -41,9 +42,19 @@ const StudentManagement = () => {
     const dispatch = useDispatch();
     const students = useSelector(getListStudent)
     const paginate = useSelector(gePaginateStudent)
+    const token = useSelector(getToken)
     const messageError = useSelector(getMessageError)
     const [isOpenSnackbar, setIsOpenSnackbar] = useState(false)
     const handleChange = (event, value) => dispatch(getStudentList(value));
+
+    //check role edit permissions
+    const decode = jwtDecode(token || '');
+    const rolesFromServer = decode["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]
+    let isPermission = false;
+
+    if (typeof (rolesFromServer) === "array")
+        isPermission = rolesFromServer.includes("Admin")
+    else isPermission = rolesFromServer === "Admin"
 
     // dispatch action get list student
     useEffect(() => {
@@ -71,12 +82,15 @@ const StudentManagement = () => {
                             <StyledTableCell>Student First Name</StyledTableCell>
                             <StyledTableCell align="left">Student Last Name</StyledTableCell>
                             <StyledTableCell align="left">Student Email</StyledTableCell>
-                            <StyledTableCell align="center">Action</StyledTableCell>
+                            {
+                                isPermission && <StyledTableCell align="center">Action</StyledTableCell>
+                            }
+
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {students.length > 0 ? students.map((row, index) => (
-                            <ItemStudent row={row} key={index} />
+                            <ItemStudent isPermission={isPermission} row={row} key={index} />
                         ))
                             : <TableRow>
                                 <StyledTableCell colSpan="4" className='center'>
@@ -99,4 +113,3 @@ const StudentManagement = () => {
 };
 
 export default StudentManagement;
-

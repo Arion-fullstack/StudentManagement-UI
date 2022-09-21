@@ -62,4 +62,3 @@ export const deleteAllStudentApi = async () => {
         console.log(error);
     }
 }
-

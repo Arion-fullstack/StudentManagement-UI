@@ -17,7 +17,7 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import LogoutIcon from '@mui/icons-material/Logout';
-//import { logout } from '../../pages/Login/authSlice';
+import { logout } from '../../pages/Login/authSlice';
 
 const Wrapper = styled.div`
     background-color: #1565C0;
@@ -99,7 +99,7 @@ const Header = () => {
     }
 
     const handleLogout = async () => {
-        //await dispatch(logout())
+        await dispatch(logout())
         await navigate("/login")
     }
     useEffect(() => {
