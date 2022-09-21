@@ -69,7 +69,7 @@ const studentSlice = createSlice({
 			state.data.splice(index, 1);
 		},
 		[updateStudent.fulfilled]: (state, action) => {
-			console.log(action)
+
 			state.data.forEach(item => {
 				if (item.id === action.payload.data.id) {
 					item.firstName = action.payload.data.firstName
@@ -95,4 +95,3 @@ export const getMessageError = state => state.studentSlice.messageError
 export const gePaginateStudent = state => state.studentSlice.paginate
 
 export default studentSlice
-

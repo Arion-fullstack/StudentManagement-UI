@@ -55,7 +55,7 @@ const WrapForm = styled.div`
     margin-top: 20px;
 `
 
-const ItemStudent = ({ row }) => {
+const ItemStudent = ({ row, isPermission }) => {
     const dispatch = useDispatch();
     const [open, setOpen] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
@@ -78,69 +78,85 @@ const ItemStudent = ({ row }) => {
             </StyledTableCell>
             <StyledTableCell align="left">{row.lastName}</StyledTableCell>
             <StyledTableCell align="left">{row.email}</StyledTableCell>
-            <StyledTableCell spacing={2}>
-                <Stack justifyContent="flex-end" direction="row" spacing={2}>
-                    <Fab size="medium" color="secondary" aria-label="edit" onClick={handleOpen}>
-                        <EditIcon />
-                    </Fab>
-                    <Fab size="medium" color="error" aria-label="delete" onClick={handleClickOpen}>
-                        <DeleteIcon />
-                    </Fab>
-                </Stack>
-                {
-                    open && <Modal
-                        open={open}
-                        onClose={handleClose}
-                        aria-labelledby="modal-modal-title"
-                        aria-describedby="modal-modal-description"
-                    >
-                        <Box sx={style}>
-                            <Header>
-                                Edit Student
-                            </Header>
-                            <WrapForm>
-                                <form onSubmit={handleSubmit(onSubmit)}>
-                                    <Stack spacing={4} sx={{ width: '100%' }}>
-                                        <TextField defaultValue={row.firstName} label="firstName" {...register("firstName", { required: true })} />
-                                        <TextField defaultValue={row.lastName} label="lastName" {...register("lastName", { required: true })} />
-                                        <TextField defaultValue={row.email} label="Email" {...register("email", { required: true })} />
-                                        <Stack justifyContent="flex-end" direction="row" spacing={2}>
-                                            <Button
-                                                size="large" color="secondary"
-                                                onClick={handleClose}
-                                            >
-                                                Cancel
-                                            </Button>
-                                            <Button
-                                                variant="contained"
-                                                size='large'
-                                                type="submit"
-                                            >
-                                                Update
-                                            </Button>
+            {
+                isPermission && <StyledTableCell spacing={2}>
+                    <Stack justifyContent="flex-end" direction="row" spacing={2}>
+                        <Fab size="medium" color="secondary" aria-label="edit" onClick={handleOpen}>
+                            <EditIcon />
+                        </Fab>
+                        <Fab size="medium" color="error" aria-label="delete" onClick={handleClickOpen}>
+                            <DeleteIcon />
+                        </Fab>
+                    </Stack>
+                    {
+                        open && <Modal
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="modal-modal-title"
+                            aria-describedby="modal-modal-description"
+                        >
+                            <Box sx={style}>
+                                <Header>
+                                    Edit Student
+                                </Header>
+                                <WrapForm>
+                                    <form onSubmit={handleSubmit(onSubmit)}>
+                                        <Stack spacing={4} sx={{ width: '100%' }}>
+                                            <TextField error={errors.firstName ? true : false} defaultValue={row.firstName} label="First Name" {...register("firstName", { required: true })} />
+                                            {errors.firstName && <span className='dqwdwqfwq'>Please enter a valid firstName</span>}
+                                            <TextField error={errors.lastName ? true : false} defaultValue={row.lastName} label="Last Name" {...register("lastName", { required: true })} />
+                                            {errors.lastName && <span className='dqwdwqfwq'>Please enter a valid lastName</span>}
+                                            <TextField error={errors.email ? true : false} defaultValue={row.email} label="Email" {...register("email", {
+                                                required: true, pattern: {
+                                                    value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+                                                    message: "Please enter a valid email"
+                                                }
+                                            })} />
+                                            {errors.email && <span className='dqwdwqfwq'>Please enter a valid email</span>}
+                                            <Stack justifyContent="flex-end" direction="row" spacing={2}>
+                                                <Button
+                                                    size="large" color="secondary"
+                                                    onClick={handleClose}
+                                                >
+                                                    Cancel
+                                                </Button>
+                                                <Button
+                                                    variant="contained"
+                                                    size='large'
+                                                    type="submit"
+                                                >
+                                                    Update
+                                                </Button>
+                                            </Stack>
                                         </Stack>
-                                    </Stack>
-                                </form>
-                            </WrapForm>
-                        </Box>
-                    </Modal>
-                }
-                {
-                    openDialog && <DialogCustom
-                        onDelete={handleDelete}
-                        openDialog={openDialog}
-                        onCloseDialog={handleCloseDialog}
-                        label={`Delete Student: ${row.firstName + " " + row.lastName}`} />
-                }
+                                    </form>
+                                </WrapForm>
+                            </Box>
+                        </Modal>
+                    }
+                    {
+                        openDialog && <DialogCustom
+                            onDelete={handleDelete}
+                            openDialog={openDialog}
+                            onCloseDialog={handleCloseDialog}
+                            label={`Delete Student: ${row.firstName + " " + row.lastName}`} />
+                    }
 
-            </StyledTableCell>
+                </StyledTableCell>
+            }
+
         </StyledTableRow >
     );
 };
 ItemStudent.propTypes = {
-    row: PropTypes.object
+    row: PropTypes.object,
+    isPermission: PropTypes.bool
 };
 ItemStudent.defaultProps = {
-    row: {}
+    row: {},
+    isPermission: false
 }
 export default memo(ItemStudent);
+
+
+

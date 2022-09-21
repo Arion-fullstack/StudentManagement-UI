@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux';
 import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { Box, Button, Stack, TextField } from '@mui/material';
+import { login } from "./authSlice"
 import MySnackbar from '../../components/MySnackbar';
 
 const Wrapper = styled.div`
@@ -31,46 +32,66 @@ const style = {
 };
 
 function Login() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
     const { register, handleSubmit, formState: { errors } } = useForm();
     const [isOpen, setIsOpen] = useState(false);
     const [title, setTitle] = useState("");
     const [severity, setSeverity] = useState("success");
     const [isDisabled, setIsDisabled] = useState(false)
-    const onSubmit = (data) => {
-        console.log(data)
+
+    if (localStorage.getItem('token') !== null) {
+        return <Navigate to="/" replace={true} />
     }
-    const handleTest = () => {
-        console.log("Test")
-    }
-    return (
-        <Wrapper>
-            <Box sx={style}>
-                <Header>
-                    <h2>Login </h2>
-                </Header>
-                <WrapForm>
-                    <form onSubmit={handleSubmit(onSubmit)}>
-                        <Stack spacing={4} sx={{ width: '100%' }}>
-                            <TextField error={errors.userName ? true : false} label="Username" {...register("userName", { required: true })} />
-                            <TextField error={errors.password ? true : false} type="password" label="Password" {...register("password", { required: true })} />
-                            <Stack justifyContent="flex-end" alignItems="center" direction="row" spacing={2}>
-                                <Link to="/register">Register</Link>
-                                <Button
-                                    disabled={isDisabled}
-                                    variant="contained"
-                                    size='large'
-                                    type="submit"
-                                >
-                                    Login
-                                </Button>
+    else {
+        const onSubmit = async (data) => {
+
+            await dispatch(login(data))
+                .then(response => {
+                    if (response.error) {
+                        setTitle(response.error.message)
+                        setIsOpen(true)
+                        setSeverity("error")
+
+                    }
+                    else {
+                        setTitle("Login Successfully")
+                        setIsOpen(true)
+                        navigate("/")
+                    }
+                    setTimeout(() => { setIsOpen(false) }, 1000);
+                }).catch(error => console.log(error.message))
+        }
+        return (
+            <Wrapper>
+                <Box sx={style}>
+                    <Header>
+                        <h2>Login</h2>
+                    </Header>
+                    <WrapForm>
+                        <form onSubmit={handleSubmit(onSubmit)}>
+                            <Stack spacing={4} sx={{ width: '100%' }}>
+                                <TextField error={errors.userName ? true : false} label="Username" {...register("userName", { required: true })} />
+                                <TextField error={errors.password ? true : false} type="password" label="Password" {...register("password", { required: true })} />
+                                <Stack justifyContent="flex-end" alignItems="center" direction="row" spacing={2}>
+                                    <Link to="/register">Register</Link>
+                                    <Button
+                                        disabled={isDisabled}
+                                        variant="contained"
+                                        size='large'
+                                        type="submit"
+                                    >
+                                        Login
+                                    </Button>
+                                </Stack>
                             </Stack>
-                        </Stack>
-                    </form>
-                </WrapForm>
-            </Box>
-            {isOpen && <MySnackbar title={title} severity={severity} isOpen={isOpen} />}
-        </Wrapper >
-    )
+                        </form>
+                    </WrapForm>
+                </Box>
+                {isOpen && <MySnackbar title={title} severity={severity} isOpen={isOpen} />}
+            </Wrapper >
+        )
+    }
 }
 
 export default Login
