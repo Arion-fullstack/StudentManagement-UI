@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useForm } from "react-hook-form";
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { createStudent } from '../StudentManagement/studentSlice'
 import { Box, Button, Snackbar, Stack, TextField } from '@mui/material';
 import MuiAlert from '@mui/material/Alert';
 
@@ -44,8 +45,15 @@ function AddStudent() {
     const vertical = 'bottom'
     const horizontal = 'left'
     const onSubmit = async (data) => {
-        console.log(data)
-
+        try {
+            await setIsDisabled(true)
+            await dispatch(createStudent(data))
+            await setIsOpen(true)
+            await setTimeout(() => navigate("/"), 600)
+        }
+        catch (error) {
+            console.log(error)
+        }
     }
     return (
         <Wrapper>
@@ -56,17 +64,14 @@ function AddStudent() {
                 <WrapForm>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <Stack spacing={4} sx={{ width: '100%' }}>
-                            <TextField error={errors.firstName ? true : false} label="First Name" {...register("firstName", { required: true })} />
-                            {errors.firstName && <span className='dqwdwqfwq'>Please enter a valid firstName</span>}
-                            <TextField error={errors.lastName ? true : false} label="Last Name" {...register("lastName", { required: true })} />
-                            {errors.lastName && <span className='dqwdwqfwq'>Please enter a valid lastName</span>}
-                            <TextField error={errors.email ? true : false} label="Email" {...register("email", {
+                            <TextField label="First Name" {...register("firstName", { required: true })} />
+                            <TextField label="Last Name" {...register("lastName", { required: true })} />
+                            <TextField label="Email" {...register("email", {
                                 required: true, pattern: {
                                     value: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
                                     message: "Please enter a valid email"
                                 }
                             })} />
-                            {errors.email && <span className='dqwdwqfwq'>Please enter a valid email</span>}
                             <Stack justifyContent="flex-end" direction="row" spacing={2}>
                                 <Button
                                     onClick={() => navigate("/")}
@@ -99,3 +104,4 @@ function AddStudent() {
 }
 
 export default AddStudent
+
